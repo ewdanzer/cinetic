@@ -7,7 +7,6 @@ A aplicação utiliza modelos cinéticos consagrados para prever as concentraç�
 <!-- Link para a Demonstração Online (substitua pelo seu link do GitHub Pages) -->
 <!-- [Link para a Demonstração Online](https://ewdanzer.github.io/cinetica) -->
 
-![Imagem da Calculadora no Modo Escuro](https://i.imgur.com/g0oB3b8.png)
 
 ---
 
@@ -25,16 +24,7 @@ A aplicação utiliza modelos cinéticos consagrados para prever as concentraç�
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
-
-* **Frontend:** HTML5, CSS3, JavaScript
-* **Backend (no navegador):** Python (via **Pyodide**) para os cálculos numéricos.
-* **Visualização de Dados:** Chart.js
-* **Ícones:** Font Awesome
-
----
-
-## 🚀 Tutorial: Como Usar a Plataforma
+##  Tutorial
 
 Esta plataforma foi projetada para ser intuitiva. Siga os passos abaixo para realizar a sua primeira simulação.
 
@@ -115,8 +105,6 @@ Para executar este projeto no seu próprio computador:
     Acesse \`http://localhost:8000\` no seu navegador.
 
 ---
-
-## 👨‍💻 Sobre o Desenvolvedor
 
 Este projeto foi desenvolvido por **Emerson Willian Danzer**.
 
