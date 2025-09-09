@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Cinética Microbiana</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js"></script>
+</head>
+<body>
+    <button class="theme-toggle" id="theme-toggle" title="Alternar tema" aria-label="Alternar tema">
+        <i class="fas fa-moon" id="theme-icon"></i>
+    </button>
+    
+    <header>
+        <h1>Calculadora de Cinética Microbiana</h1>
+        <p class="subtitle">Simule reatores em batelada ou CSTR (quimiostato).</p>
+    </header>
+
+    <main>
+        <div class="calculator-grid">
+            <!-- Coluna de Inputs -->
+            <div class="card inputs-column">
+                <section class="input-section">
+                    <h2><i class="fas fa-cogs icon"></i> Configuração do Reator</h2>
+                    <label for="reactorType">Tipo de Reator</label>
+                    <select id="reactorType">
+                        <option value="batch">Batelada (Batch)</option>
+                        <option value="cstr">CSTR (Quimiostato)</option>
+                    </select>
+                    
+                    <div id="cstr-inputs" class="hidden-section">
+                        <h4>Parâmetros CSTR</h4>
+                        <div class="form-grid-2">
+                            <div>
+                                <label for="Sin">S entrada (g·L⁻¹)</label>
+                                <input id="Sin" type="text" value="50">
+                            </div>
+                            <div>
+                                <label for="D">Taxa de diluição D (h⁻¹)</label>
+                                <input id="D" type="text" value="0.15">
+                            </div>
+                        </div>
+                        <button id="btnSteady" class="button-secondary">Calcular Estado Estacionário</button>
+                    </div>
+                </section>
+
+                <section class="input-section">
+                    <h2><i class="fas fa-flask icon"></i> Condições Iniciais</h2>
+                    <div class="form-grid-3">
+                        <div><label for="X0">X₀ (g·L⁻¹)</label><input id="X0" type="text" value="0.2"></div>
+                        <div><label for="S0">S₀ (g·L⁻¹)</label><input id="S0" type="text" value="50"></div>
+                        <div><label for="P0">P₀ (g·L⁻¹)</label><input id="P0" type="text" value="0"></div>
+                    </div>
+                </section>
+                
+                <section class="input-section">
+                    <h2><i class="fas fa-microscope icon"></i> Parâmetros Cinéticos</h2>
+                    <div class="form-grid-3">
+                        <div><label for="mu_max">μₘₐₓ (h⁻¹)</label><input id="mu_max" type="text" value="0.4"></div>
+                        <div><label for="Ks">Ks (g·L⁻¹)</label><input id="Ks" type="text" value="0.8"></div>
+                        <div><label for="Yxs">Yx/s</label><input id="Yxs" type="text" value="0.45"></div>
+                        <div><label for="mS">mS</label><input id="mS" type="text" value="0.05"></div>
+                        <div><label for="kd">kd (h⁻¹)</label><input id="kd" type="text" value="0.01"></div>
+                        <div><label for="alpha">α</label><input id="alpha" type="text" value="0.2"></div>
+                        <div><label for="beta">β</label><input id="beta" type="text" value="0.02"></div>
+                    </div>
+                </section>
+
+                <section class="input-section">
+                    <h2><i class="fas fa-stopwatch icon"></i> Simulação</h2>
+                    <div class="form-grid-3">
+                        <div><label for="t_final">Tempo final (h)</label><input id="t_final" type="text" value="48"></div>
+                        <div><label for="dt">Passo dt (h)</label><input id="dt" type="text" value="0.1"></div>
+                        <div>
+                            <label for="method">Método</label>
+                            <select id="method">
+                                <option value="rk4">RK4 (preciso)</option>
+                                <option value="euler">Euler (rápido)</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+                
+                <div class="main-actions">
+                    <button id="btnSim" class="button-primary">Simular</button>
+                    <button id="btnCSV" class="button-secondary" disabled>Baixar CSV</button>
+                </div>
+            </div>
+            
+            <!-- Coluna de Resultados -->
+            <div class="card results-column">
+                <section>
+                    <div class="chart-header">
+                        <h2><i class="fas fa-chart-line icon"></i> Gráfico de Simulação</h2>
+                        <button id="btnLogX" title="Alternar escala logarítmica para biomassa" class="button-icon">log₁₀</button>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chartMain"></canvas>
+                    </div>
+                </section>
+
+                <section>
+                    <h2><i class="fas fa-poll icon"></i> Indicadores e Resultados</h2>
+                    <div id="steadyStateInfo" class="info-box"></div>
+                    <div id="indicators" class="info-box">
+                         <p class="placeholder">Indicadores aparecerão aqui após a simulação.</p>
+                    </div>
+                </section>
+
+                <section>
+                    <h2><i class="fas fa-table icon"></i> Tabela de Dados</h2>
+                    <div id="resultsTableContainer">
+                        <p class="placeholder">A tabela de resultados aparecerá aqui.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="footer-content">
+            <p>Desenvolvido por <strong>Emerson Willian Danzer</strong></p>
+            <div class="social-links">
+                <a href="https://github.com/ewdanzer" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+                <a href="https://linkedin.com/in/emerson-danzer" target="_blank" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            </div>
+            <div class="collab-links">
+                <span>Conheça outros projetos em que estou envolvido:</span>
+                <a href="https://www.instagram.com/igem_synfronteras" target="_blank">iGEM SynFronteras</a>
+                <a href="https://www.instagram.com/rsg_brazil" target="_blank">RSG-Brazil</a>
+            </div>
+        </div>
+    </footer>
+    
+    <div id="loader-overlay">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div id="loader-text">Carregando...</div>
+        </div>
+    </div>
+
+    <script src="kinetics_main.js"></script>
+</body>
+</html>
+
